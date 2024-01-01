@@ -1,0 +1,13 @@
+{
+    "login": {
+        "title": "Grott MQTT information",
+        "host": "Host",
+        "port": "Port",
+        "username": "Username",
+        "password": "Password",
+        "submit": "Submit"
+    },
+    "mqtt": {
+        "topic": "Topic"
+    }
+}

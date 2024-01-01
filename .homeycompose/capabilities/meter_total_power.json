@@ -1,0 +1,18 @@
+ 
+{
+    "type": "number",
+    "title": { 
+        "en": "Energy total",
+        "nl": "Energie totaal"
+    },
+    "getable": true,
+    "setable": false,
+    "uiComponent": "sensor",
+    "uiQuickAction": true,
+    "units": {
+        "en": "kWh"
+    },
+    "decimals": 1,
+    "insights": true,
+    "icon": "/assets/capabilities/meter_total_power.svg"
+}

@@ -1,0 +1,11 @@
+{
+    "actions": [
+        {
+            "id": "reset_energy_today",
+            "title": {
+                "en": "Reset the value for Energy today",
+                "nl": "Reset waarde voor Energie vandaag"
+            }
+        }
+    ]
+}
