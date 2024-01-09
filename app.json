@@ -62,6 +62,9 @@
       "connectivity": [
         "lan"
       ],
+      "energy": {
+        "cumulative": true
+      },
       "images": {
         "small": "/drivers/grott/assets/images/small.png",
         "large": "/drivers/grott/assets/images/large.png",
