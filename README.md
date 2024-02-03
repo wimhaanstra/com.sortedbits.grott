@@ -4,13 +4,41 @@ Adds support for [Grott MQTT topics](https://github.com/johanmeijer/grott) to Ho
 
 Currently there are a bunch of limitations:
 
-- Only able to use `MQTT`, websockets are not supported
-- Only 4 fields are exposed at the moment.
-    - Current output
-    - Average voltage over all phases
-    - Energy total
-    - Energy today
-- Not ready to publish to the Homey App store yet
+- Limited MQTT connection options:
+    - Only MQTT and WS protocol supported
+    - Ability to enable/disable certificate validation
+    - No TLS support
+    - No basepath support
 
-I am currently not using any more fields, but always open for suggestions.
+### Supported apabilities
 
+```
+[
+    "meter_today_power",
+    "meter_power",
+    "measure_power",
+
+    "measure_voltage.pv1",
+    "measure_current.pv1",
+    "measure_power.pv1",
+
+    "measure_voltage.pv2",
+    "measure_current.pv2",
+    "measure_power.pv2",
+
+    "measure_voltage.grid1",
+    "measure_current.grid1",
+    "measure_power.grid1",
+
+    "measure_voltage.grid2",
+    "measure_current.grid2",
+    "measure_power.grid2",
+
+    "measure_voltage.grid3",
+    "measure_current.grid3",
+    "measure_power.grid3",
+
+    "serial_number.datalogger",
+    "serial_number.pv"
+],
+```
