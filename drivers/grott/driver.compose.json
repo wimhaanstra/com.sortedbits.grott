@@ -4,11 +4,125 @@
   },
   "class": "solarpanel",
   "capabilities": [
-    "meter_total_power",
     "meter_today_power",
+    "meter_power",
     "measure_power",
-    "measure_voltage"
+
+    "measure_voltage.pv1",
+    "measure_current.pv1",
+    "measure_power.pv1",
+
+    "measure_voltage.pv2",
+    "measure_current.pv2",
+    "measure_power.pv2",
+
+    "measure_voltage.grid1",
+    "measure_current.grid1",
+    "measure_power.grid1",
+
+    "measure_voltage.grid2",
+    "measure_current.grid2",
+    "measure_power.grid2",
+
+    "measure_voltage.grid3",
+    "measure_current.grid3",  
+    "measure_power.grid3",
+
+    "serial_number.datalogger",
+    "serial_number.pv"
   ],
+  "capabilitiesOptions": {
+    "serial_number.datalogger": {
+      "title": {
+        "en": "Serial number datalogger"
+      }
+    },
+    "serial_number.pv": {
+      "title": {
+        "en": "Serial number PV"
+      }
+    },
+    "measure_voltage.pv1": {
+      "title": {
+        "en": "PV1 voltage"
+      }
+    },
+    "measure_voltage.pv2": {
+      "title": {
+        "en": "PV2 voltage"
+      }
+    },
+    "measure_voltage.grid1": {
+      "title": {
+        "en": "Phase 1 voltage"
+      }
+    },
+    "measure_voltage.grid2": {
+      "title": {
+        "en": "Phase 2 voltage"
+      }
+    },
+    "measure_voltage.grid3": {
+      "title": {
+        "en": "Phase 3 voltage"
+      }
+    },
+
+    "measure_current.pv1": {
+      "title": {
+        "en": "PV1 current"
+      }
+    },
+    "measure_current.pv2": {
+      "title": {
+        "en": "PV2 current"
+      }
+    },
+
+    "measure_current.grid1": {
+      "title": {
+        "en": "Phase 1 current"
+      }
+    },
+    "measure_current.grid2": {
+      "title": {
+        "en": "Phase 2 current"
+      }
+    },
+    "measure_current.grid3": {
+      "title": {
+        "en": "Phase 3 current"
+      }
+    },
+
+    
+    "measure_power.pv1": {
+      "title": {
+        "en": "PV1 input power"
+      }
+    },
+    "measure_power.pv2": {
+      "title": {
+        "en": "PV2 input power"
+      }
+    },
+
+    "measure_power.grid1": {
+      "title": {
+        "en": "Phase 1 power"
+      }
+    },
+    "measure_power.grid2": {
+      "title": {
+        "en": "Phase 2 power"
+      }
+    },
+    "measure_power.grid3": {
+      "title": {
+        "en": "Phase 3 power"
+      }
+    }    
+  },
   "platforms": [
     "local"
   ],

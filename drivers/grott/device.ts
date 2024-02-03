@@ -4,78 +4,151 @@ import { MqttClient, connect } from 'mqtt';
 interface GrottData {
   device: string;
   time: string;
-  values: GrottDataValues
+  values: any
 }
 
-interface GrottDataValues {
-  pvpowerout: number;
-  pvgridvoltage: number;
-  pvgridvoltage2: number;
-  pvgridvoltage3: number;
-  pvenergytoday: number;
-  pvenergytotal: number;
+interface Mapping {
+  capability: string;
+  property: string;
+  divide: boolean;
 }
 
 class Grott extends Homey.Device {
 
   client: MqttClient | undefined = undefined;
   lastPacket: GrottData | undefined = undefined;
+  mappings: Mapping[] = [];
 
-  async parseData(data: GrottData) {
-    this.lastPacket = data;
-
-    if (data.values.pvpowerout !== undefined) {
-      this.setCapabilityValue('measure_power', data.values.pvpowerout / 10);
-    }
-
-    const averageVoltage = ((data.values.pvgridvoltage + data.values.pvgridvoltage2 + data.values.pvgridvoltage3) / 3) / 10;
-    this.setCapabilityValue('measure_voltage', averageVoltage);
-    this.setCapabilityValue('meter_today_power', data.values.pvenergytoday / 10);
-    this.setCapabilityValue('meter_total_power', data.values.pvenergytotal / 10);
+  createMapping = (capability: string, property: string, divide: boolean = true): Mapping => {
+    return {
+      capability,
+      property,
+      divide,
+    };
   }
 
-  async connectToMqtt() {
+  parseData = async (data: GrottData) => {
+    this.lastPacket = data;
 
+    if (data?.values === undefined) {
+      return;
+    }
+
+    for (const mapping of this.mappings) {
+      const value = data.values[mapping.property];
+      if (value !== undefined) {
+        this.log(`Setting ${mapping.capability} to ${value}`);
+
+        if (!mapping.divide) {
+          await this.setCapabilityValue(mapping.capability, value);
+        } else if (Number(value)) {
+          await this.setCapabilityValue(mapping.capability, value / 10);
+        } else {
+          this.error(`Failed to parse ${mapping.property} NaN`, value);
+        }
+      }
+    }
+  }
+
+  connectToMqtt = async () => {
+    const {
+      host, port, topic, username, password, protocol, validateCertificate,
+    } = this.getSettings();
+    /*
     const host = this.getSetting('host');
     const port = this.getSetting('port') ?? 1883;
     const topic = this.getSetting('topic') ?? 'energy/growatt';
     const username = this.getSetting('username');
     const password = this.getSetting('password');
-
+    const protocol = this.getSetting('protocol') ?? 'mqtt';
+    const validateCertificate = this.getSetting('validateCertificate') ?? true;
+    */
     if (this.client && this.client.connected) {
       this.client.end();
     }
 
-    const broker = `${host}:${port}`;
+    const broker = `${protocol ?? 'mqtt'}://${host}:${port ?? 1883}`;
     this.log(`Connecting to broker ${broker}`);
 
-    const client = connect(`mqtt://${host}`, {
-      username: username,
-      password: password,
+    const client = connect(`${protocol ?? 'mqtt'}://${host}`, {
+      username,
+      password,
       port: Number(port),
-    })
+      rejectUnauthorized: validateCertificate ?? true,
+    });
 
     if (client.connected) {
       this.log('Client connected');
     }
 
     client.on('connect', () => {
-      this.log(`Connected to broker, subscribing to ${topic}`);
+      this.log(`Connected to broker ${broker}, subscribing to ${topic}`);
       this.client = client;
       client.subscribe(topic, () => {
-        this.log(`Succesfully subscribed to ${topic}`)
+        this.log(`Succesfully subscribed to ${topic}`);
       });
+    });
+
+    client.on('error', (error) => {
+      this.error(`Failed to connect to broker ${broker}`, error);
+      client.end();
     });
 
     client.on('message', (topic, data, packet) => {
       this.log(`Received packet in ${topic}: ${data.length}`);
-      
-      this.parseData(JSON.parse(data.toString()) as GrottData);
-    })
+
+      this.parseData(JSON.parse(data.toString()) as GrottData)
+        .then(() => {
+          this.log('Data from MQTT parsed');
+        }).catch((error) => {
+          this.error('Failed to parse data from MQTT', error);
+        });
+    });
 
     client.on('disconnect', () => {
-      this.log('Disconnected from broker');
-    })
+      this.log('Disconnected from broker', host);
+    });
+  }
+
+  setupMappings = async () => {
+    this.mappings = [];
+
+    this.mappings.push(this.createMapping('measure_power', 'pvpowerout'));
+
+    this.mappings.push(this.createMapping('serial_number.datalogger', 'datalogserial', false));
+    this.mappings.push(this.createMapping('serial_number.pv', 'pvserial', false));
+
+    this.mappings.push(this.createMapping('measure_voltage.grid1', 'pvgridvoltage'));
+    this.mappings.push(this.createMapping('measure_current.grid1', 'pvgridcurrent'));
+    this.mappings.push(this.createMapping('measure_power.grid1', 'pvgridpower'));
+
+    this.mappings.push(this.createMapping('measure_voltage.grid2', 'pvgridvoltage2'));
+    this.mappings.push(this.createMapping('measure_current.grid2', 'pvgridcurrent2'));
+    this.mappings.push(this.createMapping('measure_power.grid2', 'pvgridpower2'));
+
+    this.mappings.push(this.createMapping('measure_voltage.grid3', 'pvgridvoltage3'));
+    this.mappings.push(this.createMapping('measure_current.grid3', 'pvgridcurrent3'));
+    this.mappings.push(this.createMapping('measure_power.grid3', 'pvgridpower3'));
+
+    this.mappings.push(this.createMapping('measure_voltage.pv1', 'pv1voltage'));
+    this.mappings.push(this.createMapping('measure_current.pv1', 'pv1current'));
+    this.mappings.push(this.createMapping('measure_power.pv1', 'pv1watt'));
+
+    this.mappings.push(this.createMapping('measure_voltage.pv2', 'pv2voltage'));
+    this.mappings.push(this.createMapping('measure_current.pv2', 'pv2current'));
+    this.mappings.push(this.createMapping('measure_power.pv2', 'pv2watt'));
+
+    this.mappings.push(this.createMapping('meter_today_power', 'pvenergytoday'));
+    this.mappings.push(this.createMapping('meter_power', 'pvenergytotal'));
+
+    /*
+    for (const mapping of this.mappings) {
+      await this.removeCapability(mapping.capability);
+    }
+*/
+    for (const mapping of this.mappings) {
+      await this.checkCapability(mapping.capability);
+    }
   }
 
   /**
@@ -84,7 +157,9 @@ class Grott extends Homey.Device {
   async onInit() {
     this.log('Grott has been initialized');
 
-    this.connectToMqtt();    
+    await this.setupMappings();
+
+    await this.connectToMqtt();
 
     const resetEnergyToday = this.homey.flow.getActionCard('reset_energy_today');
 
@@ -96,6 +171,13 @@ class Grott extends Homey.Device {
         this.client?.publish(topic, JSON.stringify(this.lastPacket));
       }
     });
+  }
+
+  checkCapability = async (capabilityName: string) => {
+    if (this.hasCapability(capabilityName) === false) {
+      this.log('Adding capability', capabilityName);
+      await this.addCapability(capabilityName);
+    }
   }
 
   /**
@@ -118,11 +200,13 @@ class Grott extends Homey.Device {
     newSettings,
     changedKeys,
   }: {
-    oldSettings: { [key: string]: boolean | string | number | undefined | null };
+    oldSettings: {
+      [key: string]: boolean | string | number | undefined | null
+    };
     newSettings: { [key: string]: boolean | string | number | undefined | null };
     changedKeys: string[];
   }): Promise<string | void> {
-    this.log("Grott settings where changed");
+    this.log('Grott settings where changed');
 
     await this.connectToMqtt();
   }
@@ -141,7 +225,7 @@ class Grott extends Homey.Device {
    */
   async onDeleted() {
     if (this.client && this.client.connected) {
-      this.log(`Disconnecting from MQTT broker`);
+      this.log('Disconnecting from MQTT broker');
       this.client.end();
     }
 

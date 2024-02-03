@@ -1,11 +1,14 @@
 {
     "login": {
         "title": "Grott MQTT information",
-        "host": "Host",
-        "port": "Port",
+        "protocol": "Protocol",
+        "validate_certificate": "Validate certificate",
+        "host": "MQTT Broker host",
+        "port": "MQTT Broker port",
         "username": "Username",
         "password": "Password",
-        "submit": "Submit"
+        "submit": "Submit",
+        "intro": "When using this app, make sure you have Grott installed and pushing its data to your MQTT broker. If you are unsure, please read the following documentation."
     },
     "mqtt": {
         "topic": "Topic"

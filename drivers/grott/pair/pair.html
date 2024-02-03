@@ -5,18 +5,24 @@
         button.classList.add('is-loading');
 
         var host = document.getElementById('host').value;
+        var protocol = document.getElementById('protocol').value;
         var port = document.getElementById('port').value;
         var username = document.getElementById('username').value;
         var password = document.getElementById('password').value;
         var topic = document.getElementById('topic').value;
+        var validate_certificate = document.getElementById('validate_certificate').checked;
 
         var data = {
+            protocol: protocol,
             username: username,
             password: password,
+            validate_certificate: validate_certificate,
             host: host,
             port: port,
             topic: topic
         };
+
+        console.log('Form data', data);
 
         Homey.emit("form_complete", data).then(function (result) {
             button.classList.remove('is-loading');
@@ -28,10 +34,38 @@
     }
 </script>
 
+<style>
+    .homey-form {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .padding-bottom-20 {
+        padding-bottom: 20px;
+    }
+</style>
+
+
 <form class="homey-form">
     <fieldset class="homey-form-fieldset">
         <legend class="homey-form-legend" data-i18n="login.title"></legend>
 
+        <div class=""homey-form-group" data-i18n="login.intro">
+        </div>
+
+        <div class="homey-form-group">
+            https://github.com/johanmeijer/grott/wiki/MQTT
+        </div>
+
+        <div class="homey-form-group">
+            <label class="homey-form-label" for="host" data-i18n="login.protocol"></label>
+            <select class="homey-form-select" id="protocol">
+                <option value="mqtt" selected="selected">MQTT</option>
+                <option value="ws">WS</option>
+            </select>
+        </div>
         <div class="homey-form-group">
             <label class="homey-form-label" for="host" data-i18n="login.host"></label>
             <input class="homey-form-input" id="host" type="text" value="" />
@@ -40,7 +74,10 @@
             <label class="homey-form-label" for="port" data-i18n="login.port"></label>
             <input class="homey-form-input" id="port" type="text" value="1883" />
         </div>
-
+        <div class="homey-form-group">
+            <label class="homey-form-label" for="validate_certificate" data-i18n="login.validate_certificate"></label>
+            <input class="homey-form-input" id="validate_certificate" type="checkbox" value="true" checked="checked" />
+        </div>
         <div class="homey-form-group">
             <label class="homey-form-label" for="username" data-i18n="login.username"></label>
             <input class="homey-form-input" id="username" type="text" value="" />
@@ -57,7 +94,10 @@
 
     </fieldset>
 
-    <button id="submit-button" type="button" onclick="submitForm()" class="homey-button-primary-full"
-        data-i18n="login.submit">
-    </button>
+    <div class="homey-form-group padding-bottom-20">
+        <button id="submit-button" type="button" onclick="submitForm()" class="homey-button-primary-full"
+            data-i18n="login.submit">
+        </button>
+    </div>
+
 </form>

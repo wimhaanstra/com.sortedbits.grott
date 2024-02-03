@@ -10,7 +10,7 @@
     "en": "Grott"
   },
   "description": {
-    "en": "Adds support for Grott MQTT topics"
+    "en": "Use MQTT to monitor your Growatt inverters."
   },
   "category": [
     "energy"
@@ -24,5 +24,6 @@
   "author": {
     "name": "Wim Haanstra",
     "email": "wim@sortedbits.com"
-  }
+  },
+  "brandColor": "#69b80e"
 }
