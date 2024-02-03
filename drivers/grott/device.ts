@@ -54,15 +54,7 @@ class Grott extends Homey.Device {
     const {
       host, port, topic, username, password, protocol, validateCertificate,
     } = this.getSettings();
-    /*
-    const host = this.getSetting('host');
-    const port = this.getSetting('port') ?? 1883;
-    const topic = this.getSetting('topic') ?? 'energy/growatt';
-    const username = this.getSetting('username');
-    const password = this.getSetting('password');
-    const protocol = this.getSetting('protocol') ?? 'mqtt';
-    const validateCertificate = this.getSetting('validateCertificate') ?? true;
-    */
+
     if (this.client && this.client.connected) {
       this.client.end();
     }
