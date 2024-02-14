@@ -82,14 +82,10 @@ class GrottDriver extends Homey.Driver {
   }
 
   async onPair(session: PairSession) {
-    await session.done();
-
     session.setHandler('form_complete', async (data) => {
       this.log('Calling testPairing with ', data);
       return this._testPairing(data, session);
     });
-
-    session.setHandler('showView', async (view) => { });
 
     session.setHandler('list_devices', async () => {
       return [
@@ -110,25 +106,6 @@ class GrottDriver extends Homey.Driver {
         },
       ];
     });
-  }
-
-  /**
-   * onPairListDevices is called when a user is adding a device and the 'list_devices' view is called.
-   * This should return an array with the data of devices that are available for pairing.
-   */
-  async onPairListDevices() {
-    return [
-      // Example device data, note that `store` is optional
-      // {
-      //   name: 'My Device',
-      //   data: {
-      //     id: 'my-device',
-      //   },
-      //   store: {
-      //     address: '127.0.0.1',
-      //   },
-      // },
-    ];
   }
 
 }

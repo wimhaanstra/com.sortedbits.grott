@@ -1,7 +1,7 @@
 {
     "editor.defaultFormatter": null,
     "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": true
+        "source.fixAll.eslint": "explicit"
     },
     "[jsonc]": {
         "editor.defaultFormatter": "vscode.json-language-features"
