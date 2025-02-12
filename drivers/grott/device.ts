@@ -41,7 +41,7 @@ class Grott extends Homey.Device {
 
         if (!mapping.divide) {
           await this.setCapabilityValue(mapping.capability, value);
-        } else if (Number(value)) {
+        } else if (value === 0 || Number(value)) {
           await this.setCapabilityValue(mapping.capability, value / 10);
         } else {
           this.error(`Failed to parse ${mapping.property} NaN`, value);
